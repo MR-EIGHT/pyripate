@@ -10,6 +10,7 @@ from queue import Queue, Empty
 from urllib.parse import urljoin, urlparse
 
 threadLock = threading.Lock()
+lock = multiprocessing.Lock()
 
 
 class pyripate:
@@ -32,8 +33,33 @@ class pyripate:
             self.scraping_queue = Queue()
             self.scraped_urls = set()
 
+    def rip(self):
+        while True:
+            try:
+                print(f"Current Process: {multiprocessing.current_process().name}\n")
+                current_page = self.scraping_queue.get(timeout=20)
 
+                if self.scraped_urls.get(current_page) != 1:
+                    print(f"Scraping URL: {current_page}")
+                    self.scraped_urls[current_page] = 1
+                    job = self.pool.submit(self.ate, current_page)
+                    job.add_done_callback(self.post_scrape)
+                    with lock:
+                        if len(self.scraped_urls) == self.limit:
+                            self.pool.shutdown(wait=True)
+                            return
+            except Empty:
+                return
+            except Exception as e:
+                print(e)
+                continue
 
+    def ate(self, url):
+        try:
+            content = requests.get(url, timeout=(3, 30))
+            return content
+        except requests.RequestException:
+            return
 
 
 if __name__ == '__main__':
