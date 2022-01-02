@@ -61,6 +61,14 @@ class pyripate:
         except requests.RequestException:
             return
 
+    def post_scrape(self, cont):
+        content = cont.result()
+        if content and content.status_code == 200:
+            with open(f"{content.url}", 'w') as file:
+                file.write(cont.content)
+            self.pase_links(content.text)
+            self.scrape_info(content.text)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
