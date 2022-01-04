@@ -4,7 +4,7 @@ import concurrent.futures
 import threading
 import time
 import argparse
-import bs4 as bs
+from bs4 import BeautifulSoup
 import requests
 from queue import Queue, Empty
 from urllib.parse import urljoin, urlparse
@@ -21,6 +21,9 @@ class pyripate:
         self.limit = arguments.number
         self.root_url = '{}://{}'.format(urlparse(self.url).scheme,
                                          urlparse(self.url).netloc)
+
+        self.path = str(urlparse(self.url).netloc)
+
         if arguments.multiprocess:
             self.pool = concurrent.futures.ProcessPoolExecutor(max_workers=arguments.parallels)
             self.scraping_queue = multiprocessing.Queue()
@@ -64,11 +67,20 @@ class pyripate:
     def post_scrape(self, cont):
         content = cont.result()
         if content and content.status_code == 200:
-            with open(f"{content.url}", 'w') as file:
+            with open(f"{self.path} / {content.url}", 'w') as file:
                 file.write(cont.content)
-            self.pase_links(content.text)
+            self.parse_links(content.text)
             self.scrape_info(content.text)
 
+    def parse_links(self, html):
+        soup = BeautifulSoup(html,'html.parser')
+        anchor_tags = soup.find_all('a', href=True)
+        for link in anchor_tags:
+            url = link['href']
+            if url.startswith('/') or url.startswith(self.root_url):
+                url = urljoin(self.root_url, url)
+                if url not in self.scraped_pages:
+                    self.crawl_queue.put(url)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
