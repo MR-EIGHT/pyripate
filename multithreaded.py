@@ -12,7 +12,7 @@ from queue import Queue, Empty
 from urllib.parse import urljoin, urlparse
 
 
-class pyripate:
+class MultiThreadPyrate:
     counter = 0
 
     def __init__(self, arguments):

@@ -1,3 +1,4 @@
+import mimetypes
 import multiprocessing
 import os
 from multiprocessing import shared_memory
@@ -11,7 +12,8 @@ from queue import Queue, Empty
 from urllib.parse import urljoin, urlparse
 
 
-class pyripate:
+
+class MultiProcessPyrate:
     counter = 0
 
     def __init__(self, arguments):
@@ -36,7 +38,6 @@ class pyripate:
             self.scraped_urls = multiprocessing.Manager().dict()
             self.scraped_urls['counter'] = 0
             self.scraping_queue.put(arguments.url)
-
 
     def rip(self):
         while True and self.scraped_urls.get('counter') <= self.limit:
@@ -88,7 +89,7 @@ class pyripate:
             if url.startswith('/') or url.startswith(self.root_url):
                 url = urljoin(self.root_url, url)
 
-                if url not in self.scraped_urls:
+                if self.scraped_urls[url] != 1:
                     if '.' not in url[-5:] and url[-5:] != '.html':
                         self.scraping_queue.put(url)
                     else:
@@ -99,7 +100,7 @@ class pyripate:
             url = link['src']
             print(url)
             url = urljoin(self.root_url, url)
-            if url not in self.scraped_urls:
+            if self.scraped_urls[url] != 1:
                 self.scraped_urls[url] = 1
                 self.ate(url)
 
