@@ -1,11 +1,11 @@
+import concurrent.futures
 import multiprocessing
 import os
 import random
-import concurrent.futures
-from bs4 import BeautifulSoup
-import requests
-from queue import Queue, Empty
+from queue import Empty
 from urllib.parse import urljoin, urlparse
+import requests
+from bs4 import BeautifulSoup
 
 lock = multiprocessing.Lock()
 scraping_queue = multiprocessing.Queue()
@@ -52,7 +52,7 @@ def ate(url):
 
 
 def run(args):
-    global scraped_urls, lock, scraping_queue, root_url,path
+    global scraped_urls, lock, scraping_queue, root_url, path
     limit = args.number
     workers = args.parallels
     root_url = '{}://{}'.format(urlparse(args.url).scheme,

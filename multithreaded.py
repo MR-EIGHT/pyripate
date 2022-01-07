@@ -33,7 +33,7 @@ class MultiThreadPyrate:
 
     def rip(self):
 
-        while self.current_num <= self.limit-1:
+        while self.current_num <= self.limit - 1:
             try:
                 print(f"Current Process: {multiprocessing.current_process().name}\n")
                 current_page = self.scraping_queue.get(timeout=20)
