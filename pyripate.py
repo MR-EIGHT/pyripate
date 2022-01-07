@@ -1,6 +1,6 @@
 import argparse
-from .multithreaded import MultiThreadPyrate
-from .multiprocessed import MultiProcessPyrate
+from multithreaded import MultiThreadPyrate
+import multiprocessed
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -22,4 +22,4 @@ if __name__ == '__main__':
         threaded.rip()
 
     elif args.multiprocess:
-        MultiProcessPyrate()
+        multiprocessed.run(args)
