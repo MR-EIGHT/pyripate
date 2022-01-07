@@ -1,4 +1,7 @@
 import argparse
+from urllib.parse import urlparse
+
+from browsabled import Browsabled
 from multithreaded import MultiThreadPyrate
 import multiprocessed
 
@@ -23,3 +26,6 @@ if __name__ == '__main__':
 
     elif args.multiprocess:
         multiprocessed.run(args)
+
+    b = Browsabled(str(args.url.replace(urlparse(args.url).scheme, '').replace('/', '').replace(':', '')))
+    b.make_links_relative()
