@@ -21,27 +21,38 @@ def ate(url):
     try:
         content = requests.get(url, timeout=(3, 30))
         if content.status_code == 200:
-            path = urlparse(content.url).path
+            # path = urlparse(content.url).path
 
             with open(
-                    f"./{path}/ {str(random.random())}",
+                    f"./{path}/{str(random.random())}",
                     'wb') as file:
                 file.write(content.content)
             html = content.text
             soup = BeautifulSoup(html, 'html.parser')
             anchor_tags = soup.find_all('a', href=True)
+            source_tags = soup.find_all('img')
+
             for link in anchor_tags:
                 url = link['href']
                 if url.startswith('/') or url.startswith(root_url):
                     url = urljoin(root_url, url)
                     if scraped_urls.get(url) != 1:
                         scraping_queue.put(url)
+
+            for link in source_tags:
+                url = link['src']
+                if url.startswith('/') or url.startswith(root_url):
+                    url = urljoin(root_url, url)
+                if scraped_urls.get(url) != 1:
+                    scraped_urls[url] = 1
+                    ate(url)
+
     except requests.RequestException:
         return
 
 
 def run(args):
-    global scraped_urls, lock, scraping_queue, root_url
+    global scraped_urls, lock, scraping_queue, root_url,path
     limit = args.number
     workers = args.parallels
     root_url = '{}://{}'.format(urlparse(args.url).scheme,
@@ -52,8 +63,8 @@ def run(args):
         os.makedirs(f"./{path}")
 
     pool = concurrent.futures.ProcessPoolExecutor(max_workers=workers)
-
-    while True and scraped_urls.get('counter') <= limit:
+    scraping_queue.put(args.url)
+    while scraped_urls.get('counter') <= limit - 1:
         try:
             print(f"Current Process: {multiprocessing.current_process().name}\n")
             current_page = scraping_queue.get(timeout=20)
