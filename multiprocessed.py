@@ -1,7 +1,6 @@
 import concurrent.futures
 import multiprocessing
 import os
-import random
 from queue import Empty
 from urllib.parse import urljoin, urlparse
 import requests
