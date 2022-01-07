@@ -1,7 +1,6 @@
 import multiprocessing
 import os
 import concurrent.futures
-import random
 import threading
 from bs4 import BeautifulSoup
 import requests
@@ -35,11 +34,9 @@ class MultiThreadPyrate:
 
         while self.current_num <= self.limit - 1:
             try:
-                print(f"Current Process: {multiprocessing.current_process().name}\n")
                 current_page = self.scraping_queue.get(timeout=20)
 
                 if current_page not in self.scraped_urls:
-                    print(f"Scraping URL: {current_page}")
                     self.scraped_urls.add(current_page)
 
                     self.pool.submit(self.ate, current_page)
@@ -53,7 +50,7 @@ class MultiThreadPyrate:
             except Exception as e:
                 print(e)
                 continue
-        self.pool.shutdown()
+        self.pool.shutdown(wait=True)
 
     def ate(self, url):
 
@@ -69,7 +66,9 @@ class MultiThreadPyrate:
             # content_type = content.headers['content-type']
             # extension = mimetypes.guess_extension(content_type)
             scheme = urlparse(content.url).scheme
-            name = content.url.replace(scheme, '').replace('/', '').replace(':', '').replace('.','').replace('=','').replace('\\','').replace('?','')
+            name = content.url.replace(scheme, '').replace('/', '').replace(':', '').replace('.', '').replace('=',
+                                                                                                              '').replace(
+                '\\', '').replace('?', '')
 
             # ext = os.path.splitext(path)[1]
             # print(path)

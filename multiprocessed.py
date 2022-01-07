@@ -79,12 +79,9 @@ def run(args):
     scraping_queue.put(args.url)
     while scraped_urls.get('counter') <= limit - 1:
         try:
-            print(f"Current Process: {multiprocessing.current_process().name}\n")
             current_page = scraping_queue.get(timeout=20)
 
             if scraped_urls.get(current_page) != 1:
-                print(f"Scraping URL: {current_page}")
-
                 scraped_urls[current_page] = 1
                 with lock:
                     scraped_urls['counter'] += 1
@@ -95,3 +92,4 @@ def run(args):
         except Exception as e:
             print(e)
             continue
+    pool.shutdown(wait=True)
