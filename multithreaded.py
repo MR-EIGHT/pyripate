@@ -45,7 +45,7 @@ class MultiThreadPyrate:
                     self.pool.submit(self.ate, current_page)
                     if not (current_page.endswith('.jpg') or current_page.endswith('.png') or current_page.endswith(
                             '.js') or current_page.endswith('.gif') or current_page.endswith(
-                            '.css') or current_page.endswith('.jpeg')):
+                        '.css') or current_page.endswith('.jpeg')):
                         with self.threadLock:
                             self.current_num += 1
             except Empty:
@@ -68,12 +68,14 @@ class MultiThreadPyrate:
         if content.status_code == 200:
             # content_type = content.headers['content-type']
             # extension = mimetypes.guess_extension(content_type)
-            path = urlparse(content.url).path
+            scheme = urlparse(content.url).scheme
+            name = content.url.replace(scheme, '').replace('/', '').replace(':', '').replace('.','').replace('=','').replace('\\','').replace('?','')
+
             # ext = os.path.splitext(path)[1]
             # print(path)
             with open(
                     # content.url.rsplit('/', 1)[1]  + + ('.html' if not '.' in content.url[-4:] or path == '/' else '')
-                    f"./{self.path}/{str(random.random())}",
+                    './' + self.path + '/' + str(name),
                     'wb') as file:
                 file.write(content.content)
             self.parse_links(content.text)

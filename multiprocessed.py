@@ -23,8 +23,13 @@ def ate(url):
         if content.status_code == 200:
             # path = urlparse(content.url).path
 
+            scheme = urlparse(content.url).scheme
+            name = content.url.replace(scheme, '').replace('/', '').replace(':', '').replace('.', '').replace('=',
+                                                                                                              '').replace(
+                '\\', '').replace('?', '')
+
             with open(
-                    f"./{path}/{str(random.random())}",
+                    './' + path + '/' + str(name),
                     'wb') as file:
                 file.write(content.content)
             html = content.text
