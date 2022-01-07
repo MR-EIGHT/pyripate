@@ -45,7 +45,7 @@ class MultiThreadPyrate:
                     self.pool.submit(self.ate, current_page)
                     if not (current_page.endswith('.jpg') or current_page.endswith('.png') or current_page.endswith(
                             '.js') or current_page.endswith('.gif') or current_page.endswith(
-                        '.css') or current_page.endswith('.jpeg')):
+                            '.css') or current_page.endswith('.jpeg')):
                         with self.threadLock:
                             self.current_num += 1
             except Empty:
@@ -82,7 +82,8 @@ class MultiThreadPyrate:
     def parse_links(self, html):
         soup = BeautifulSoup(html, 'html.parser')
         anchor_tags = soup.find_all('a', href=True)
-        source_tags = soup.find_all('img')
+        source_tags = soup.find_all('img', {"src": True}) + soup.findAll('script', {"src": True})
+        css_tags = soup.findAll("link", rel="stylesheet")
         # if len(source_tags + anchor_tags) == 0:
         #     return
         for link in anchor_tags:
@@ -99,6 +100,14 @@ class MultiThreadPyrate:
 
         for link in source_tags:
             url = link['src']
+            if url.startswith('/') or url.startswith(self.root_url):
+                url = urljoin(self.root_url, url)
+            if url not in self.scraped_urls:
+                self.scraped_urls.add(url)
+                self.ate(url)
+
+        for link in css_tags:
+            url = link['href']
             if url.startswith('/') or url.startswith(self.root_url):
                 url = urljoin(self.root_url, url)
             if url not in self.scraped_urls:

@@ -30,8 +30,8 @@ def ate(url):
             html = content.text
             soup = BeautifulSoup(html, 'html.parser')
             anchor_tags = soup.find_all('a', href=True)
-            source_tags = soup.find_all('img')
-
+            source_tags = soup.find_all('img', {"src": True}) + soup.findAll('script', {"src": True})
+            css_tags = soup.findAll("link", rel="stylesheet")
             for link in anchor_tags:
                 url = link['href']
                 if url.startswith('/') or url.startswith(root_url):
@@ -41,6 +41,14 @@ def ate(url):
 
             for link in source_tags:
                 url = link['src']
+                if url.startswith('/') or url.startswith(root_url):
+                    url = urljoin(root_url, url)
+                if scraped_urls.get(url) != 1:
+                    scraped_urls[url] = 1
+                    ate(url)
+
+            for link in css_tags:
+                url = link['href']
                 if url.startswith('/') or url.startswith(root_url):
                     url = urljoin(root_url, url)
                 if scraped_urls.get(url) != 1:
