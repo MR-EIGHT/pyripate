@@ -27,5 +27,5 @@ if __name__ == '__main__':
     elif args.multiprocess:
         multiprocessed.run(args)
 
-    b = Browsabled(str(args.url.replace(urlparse(args.url).scheme, '').replace('/', '').replace(':', '')))
+    b = Browsabled('./'+str(args.url.replace(urlparse(args.url).scheme, '').replace('/', '').replace(':', '')))
     b.make_links_relative()
