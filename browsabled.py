@@ -14,5 +14,9 @@ class Browsabled:
             anchor_tags = soup.find_all('a', href=True)
             for link in anchor_tags:
                 url = link['href']
+                text.replace(url, self.__get_file_name__(url))
+            with open(self.path + file, 'wb') as f:
+                f.write(text)
 
     def __get_file_name__(self, url):
+        return url.rsplit('/', 1)[1]
