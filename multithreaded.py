@@ -46,7 +46,7 @@ class MultiThreadPyrate:
                     self.pool.submit(self.ate, current_page)
                     if not (current_page.endswith('.jpg') or current_page.endswith('.png') or current_page.endswith(
                             '.js') or current_page.endswith('.gif') or current_page.endswith(
-                            '.css') or current_page.endswith('.jpeg')):
+                        '.css') or current_page.endswith('.jpeg')):
                         with self.threadLock:
                             self.current_num += 1
             except Empty:
@@ -105,21 +105,3 @@ class MultiThreadPyrate:
             if url not in self.scraped_urls:
                 self.scraped_urls.add(url)
                 self.ate(url)
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description="This program downloads and stores any website you want within seconds!")
-    parser.add_argument('-u', '--url', required=True,
-                        help="URL to begin with.")
-    parser.add_argument('-n', '--number', type=int, default='10',
-                        help="Maximum number of pages to download.")
-    parser.add_argument('-p', '--parallels', type=int, default='5',
-                        help="Maximum number of parallel processes / threads to download.")
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('-m', '--multiprocess', action='store_true')
-    group.add_argument('-t', '--multithread', action='store_true')
-
-    args = parser.parse_args()
-    a = MultiThreadPyrate(args)
-    a.rip()
