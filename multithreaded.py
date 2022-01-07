@@ -28,7 +28,7 @@ class MultiThreadPyrate:
 
         self.pool = concurrent.futures.ThreadPoolExecutor(max_workers=arguments.parallels)
         self.scraping_queue = Queue()
-        self.scraped_urls = set()
+        self.scraped_urls = set([])
         self.scraping_queue.put(arguments.url)
 
     def rip(self):
