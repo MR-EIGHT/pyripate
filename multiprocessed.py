@@ -1,12 +1,7 @@
-import mimetypes
 import multiprocessing
 import os
 import random
-from multiprocessing import shared_memory
 import concurrent.futures
-import threading
-import time
-import argparse
 from bs4 import BeautifulSoup
 import requests
 from queue import Queue, Empty
